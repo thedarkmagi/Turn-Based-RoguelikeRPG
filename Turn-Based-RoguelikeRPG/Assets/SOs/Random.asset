@@ -11,5 +11,6 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: Random
   m_EditorClassIdentifier: Assembly-CSharp::KeyItem
-  ItemName: 
-  ItemDesc: 
+  ItemName: Gold Hex-Shaped Key
+  ItemDesc: A golden key in a peculiar hexagonal shape. The rust around the edges
+    indicate how ancient it might be. What does it unlock though?
