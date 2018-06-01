@@ -7,7 +7,7 @@ public class BoardCreator : MonoBehaviour
     // the type of tile that will be laid in a specific position.
     public enum TileType
     {
-        Wall,Floor,
+        Floor, Wall,
     }
 
     public int columns = 100;
@@ -27,9 +27,14 @@ public class BoardCreator : MonoBehaviour
     private Corridor[] corridors;
     private GameObject boardHolder;
 
+    public GameObject[][] tileArray;
+    public int startingPointX, startingPointY;
+    bool firstTimeOnly;
+
     // Use this for initialization
     void Start ()
     {
+        firstTimeOnly = true;
         boardHolder = new GameObject("BoardHolder");
 
         // incert run the functions
@@ -40,16 +45,28 @@ public class BoardCreator : MonoBehaviour
         SetTilesValueForCorridors();
 
         InstantiateTiles();
-        InstantiateOuterWalls();
+        // not needed as it simply adds a boarder 
+        //InstantiateOuterWalls();
     }
 	
     void SetupTilesArray()
     {
         tiles = new TileType[columns][];
-
+        tileArray = new GameObject[columns][];
         for(int i=0; i<tiles.Length;i++)
         {
             tiles[i] = new TileType[rows];
+            tileArray[i] = new GameObject[rows];
+        }
+
+
+        //populated the full array as walls so that rooms can be carved out later.
+        for(int j=0;j<tiles.Length;j++)
+        {
+            for(int k=0;k<tiles[j].Length;k++)
+            {
+                tiles[j][k] = TileType.Wall;
+            }
         }
     }
 
@@ -99,6 +116,13 @@ public class BoardCreator : MonoBehaviour
                     int yCoord = currentRoom.yPos + k;
 
                     tiles[xCoord][yCoord] = TileType.Floor;
+
+                    if(firstTimeOnly==true)
+                    {
+                        startingPointX = xCoord;
+                        startingPointY = yCoord;
+                        firstTimeOnly = false;
+                    }
                 }
             }
         }
@@ -143,9 +167,10 @@ public class BoardCreator : MonoBehaviour
             for(int j=0;j<tiles[i].Length;j++)
             {
                 // if floor make floor? 
-
-                InstantiateFromArray(floorTiles, i, j);
-
+                //if (tiles[i][j] == TileType.Floor)
+                //{
+                    InstantiateFromArray(floorTiles, i, j);
+               // }
                 if(tiles[i][j]==TileType.Wall)
                 {
                     InstantiateFromArray(wallTiles, i, j);
@@ -211,6 +236,10 @@ public class BoardCreator : MonoBehaviour
         Vector3 position = new Vector3(xCoord, yCoord, 0f);
 
         GameObject tileInstance = Instantiate(prefabs[randomIndex], position, Quaternion.identity) as GameObject;
+        tileArray[(int)xCoord][(int)yCoord] = tileInstance;
+
+        //int tileType = (int)
+      tileInstance.AddComponent<TerrainType>().terrain = (TerrainType.terrainType)tiles[(int)xCoord][(int)yCoord];//tileType;
 
         // this will probably cause errors?
         tileInstance.transform.parent = boardHolder.transform;
