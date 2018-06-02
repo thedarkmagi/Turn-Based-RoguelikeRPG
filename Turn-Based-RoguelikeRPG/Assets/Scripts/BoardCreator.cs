@@ -28,8 +28,10 @@ public class BoardCreator : MonoBehaviour
     private GameObject boardHolder;
 
     public GameObject[][] tileArray;
+    public bool[][] spaceOccupied; 
     public int startingPointX, startingPointY;
     bool firstTimeOnly;
+    public GameObject chest;
 
     // Use this for initialization
     void Start ()
@@ -45,6 +47,8 @@ public class BoardCreator : MonoBehaviour
         SetTilesValueForCorridors();
 
         InstantiateTiles();
+
+        spawnChests(5);
         // not needed as it simply adds a boarder 
         //InstantiateOuterWalls();
     }
@@ -53,10 +57,12 @@ public class BoardCreator : MonoBehaviour
     {
         tiles = new TileType[columns][];
         tileArray = new GameObject[columns][];
+        spaceOccupied = new bool[columns][];
         for(int i=0; i<tiles.Length;i++)
         {
             tiles[i] = new TileType[rows];
             tileArray[i] = new GameObject[rows];
+            spaceOccupied[i] = new bool[rows];
         }
 
 
@@ -66,6 +72,7 @@ public class BoardCreator : MonoBehaviour
             for(int k=0;k<tiles[j].Length;k++)
             {
                 tiles[j][k] = TileType.Wall;
+                spaceOccupied[j][k] = true;
             }
         }
     }
@@ -116,11 +123,13 @@ public class BoardCreator : MonoBehaviour
                     int yCoord = currentRoom.yPos + k;
 
                     tiles[xCoord][yCoord] = TileType.Floor;
+                    spaceOccupied[xCoord][yCoord] = false;
 
                     if(firstTimeOnly==true)
                     {
                         startingPointX = xCoord;
                         startingPointY = yCoord;
+                        spaceOccupied[xCoord][yCoord] = true; // so that the players spawn can't have other stuff placed on it 
                         firstTimeOnly = false;
                     }
                 }
@@ -239,10 +248,104 @@ public class BoardCreator : MonoBehaviour
         tileArray[(int)xCoord][(int)yCoord] = tileInstance;
 
         //int tileType = (int)
-      tileInstance.AddComponent<TerrainType>().terrain = (TerrainType.terrainType)tiles[(int)xCoord][(int)yCoord];//tileType;
+       tileInstance.AddComponent<TerrainType>().terrain = (TerrainType.terrainType)tiles[(int)xCoord][(int)yCoord];//tileType;
 
         // this will probably cause errors?
         tileInstance.transform.parent = boardHolder.transform;
+    }
+
+    void spawnChests(int numberOfChests)
+    {
+        // pick a floor tile considered empty 
+        while(numberOfChests>0)
+        {
+            bool validPlacement=false;
+            while (validPlacement != true)
+            {
+                int x, y;
+                x = Random.Range(0, tileArray.Length);
+                y = Random.Range(0, tileArray[0].Length);
+                if (spaceOccupied[x][y] == false)
+                {
+                    bool[] validDirections = { false, false, false, false };
+                    bool result = false;
+                    for (int i = 0; i < 4; i++)
+                    {
+                        // check direction tiles
+                        switch ((Direction)i)
+                        {
+                            case Direction.North:
+                                if (spaceOccupied[x][y+1] == false)
+                                {
+                                    if(spaceOccupied[x+1][y+1]==false && spaceOccupied[x-1][y+1]==false)
+                                    {
+                                        validDirections[i] = true;
+                                    }
+                                }
+
+                                break;
+                            case Direction.East:
+                                if (spaceOccupied[x+1][y ] == false)
+                                {
+                                    if (spaceOccupied[x + 1][y + 1] == false && spaceOccupied[x + 1][y - 1] == false)
+                                    {
+                                        validDirections[i] = true;
+                                    }
+                                }
+
+                                break;
+                            case Direction.South:
+                                if (spaceOccupied[x][y - 1] == false)
+                                {
+                                    if (spaceOccupied[x + 1][y - 1] == false && spaceOccupied[x - 1][y - 1] == false)
+                                    {
+                                        validDirections[i] = true;
+                                    }
+                                }
+
+                                break;
+                            case Direction.West:
+                                if (spaceOccupied[x - 1][y] == false)
+                                {
+                                    if (spaceOccupied[x - 1][y + 1] == false && spaceOccupied[x - 1][y - 1] == false)
+                                    {
+                                        validDirections[i] = true;
+                                    }
+                                }
+
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    for(int i=0; i<validDirections.Length;i++)
+                    {
+                        if(validDirections[i] == false)
+                        {
+                            result = false;
+                            break;
+                        }
+                        else
+                        {
+                            result = true;
+                        }
+                        
+                    }
+                    if(result == true)
+                    {
+                        // Create THE CHEST! 
+                        GameObject chestInstance = Instantiate(chest, new Vector3(x,y), Quaternion.identity) as GameObject;
+                        validPlacement = true;
+                    }
+                }
+
+            }
+
+
+            numberOfChests--;  // iterate 
+        }
+        // check surrounding tiles if a center tile is empty and both on either side are not. move left or right one and check again. 
     }
 
 
