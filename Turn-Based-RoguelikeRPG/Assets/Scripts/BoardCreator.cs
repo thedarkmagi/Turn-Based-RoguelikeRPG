@@ -7,7 +7,7 @@ public class BoardCreator : MonoBehaviour
     // the type of tile that will be laid in a specific position.
     public enum TileType
     {
-        Floor, Wall,
+        Floor, Corridor, Wall,  // when it comes to A* just treat everthing as -1 exect 0, so corridor will also be 0 
     }
 
     public int columns = 100;
@@ -33,11 +33,17 @@ public class BoardCreator : MonoBehaviour
     bool firstTimeOnly;
     public GameObject chest;
 
+    public GameObject[][] encounterList; // for storing a polulated list to spawn enimes from. 
+    public GameObject goblin;
+
     // Use this for initialization
     void Start ()
     {
         firstTimeOnly = true;
         boardHolder = new GameObject("BoardHolder");
+
+        setupEncounterList(1, 5);
+       // encounterList[0][1] = goblin;
 
         // incert run the functions
         SetupTilesArray();
@@ -49,6 +55,7 @@ public class BoardCreator : MonoBehaviour
         InstantiateTiles();
 
         spawnChests(5);
+        spawnEncounter(4);
         // not needed as it simply adds a boarder 
         //InstantiateOuterWalls();
     }
@@ -120,9 +127,9 @@ public class BoardCreator : MonoBehaviour
 
                 for ( int k =0; k<currentRoom.roomHeight;k++)
                 {
-                    int yCoord = currentRoom.yPos + k;
-
-                    tiles[xCoord][yCoord] = TileType.Floor;
+                    int yCoord = Mathf.Clamp( currentRoom.yPos + k,0 ,tiles[0].Length);  // clamp to stop out of array bounds, appears to work. IF ISSUE RETURNS ALTER THIS! 
+                    
+                    tiles[xCoord][yCoord] = TileType.Floor;  // sometimes causes a index out of range issue
                     spaceOccupied[xCoord][yCoord] = false;
 
                     if(firstTimeOnly==true)
@@ -248,8 +255,14 @@ public class BoardCreator : MonoBehaviour
         tileArray[(int)xCoord][(int)yCoord] = tileInstance;
 
         //int tileType = (int)
-       tileInstance.AddComponent<TerrainType>().terrain = (TerrainType.terrainType)tiles[(int)xCoord][(int)yCoord];//tileType;
-
+        if ((int)tiles[(int)xCoord][(int)yCoord] != 0)
+        {
+            tileInstance.AddComponent<TerrainType>().terrain = (TerrainType.terrainType)tiles[(int)xCoord][(int)yCoord]-1; // so the type is applied properly for movement logic.
+        }
+        else
+        {
+            tileInstance.AddComponent<TerrainType>().terrain = (TerrainType.terrainType)tiles[(int)xCoord][(int)yCoord];//tileType;
+        }
         // this will probably cause errors?
         tileInstance.transform.parent = boardHolder.transform;
     }
@@ -348,6 +361,95 @@ public class BoardCreator : MonoBehaviour
         // check surrounding tiles if a center tile is empty and both on either side are not. move left or right one and check again. 
     }
 
+     void setupEncounterList(int numOfEncounterTypes, int numOfEnemiesInEncounter) //  VERY MUCH TEMP, NEEDS A LOT OF CHANGES 
+    {
+        encounterList = new GameObject[numOfEncounterTypes][];  
+        
+        for (int i = 0; i <encounterList.Length; i++)
+        {
+            
+            encounterList[i] = new GameObject[numOfEnemiesInEncounter];
+        }
+
+
+        //populated the full array as walls so that rooms can be carved out later.
+        for (int j = 0; j < encounterList.Length; j++)
+        {
+            for (int k = 0; k < encounterList[j].Length; k++)
+            {
+                encounterList[j][k] = goblin;
+            }
+        }
+    }
+    void spawnEncounter(int maxEncounter)
+    {
+
+        // for deciding which rooms to spawn in.
+        List<int> spawnEncountersIn=new List<int>();
+        for(int i = 0; i< rooms.Length;i++)
+        {
+            if (Random.Range(0.0f, 20.0f) > 8 && i<maxEncounter)
+            {
+                spawnEncountersIn.Add(i); 
+            }
+            else
+            {
+                // mark room as bad
+            }
+        }
+
+        foreach (int room in spawnEncountersIn)
+        {
+
+            Room currentRoom = rooms[room];
+            int currentEncounter = 0; // easier for testing
+            int currentEnemy = 0; 
+
+            for (int j = 0; j < currentRoom.roomWidth; j++)
+            {
+                int xCoord = currentRoom.xPos + j;
+
+                for (int k = 0; k < currentRoom.roomHeight; k++)
+                {
+                    int yCoord = currentRoom.yPos + k;
+
+                    
+                    
+
+                    if(spaceOccupied[xCoord][yCoord] == false)
+                    {
+                        if (encounterList[currentEncounter][currentEnemy])
+                        {
+                            if (encounterList[currentEncounter][currentEnemy] != null) // incase of lists not being filled correctly
+                            {
+                                GameObject enemyInstance = Instantiate(encounterList[currentEncounter][currentEnemy], new Vector3(xCoord, yCoord), Quaternion.identity) as GameObject;
+                                spaceOccupied[xCoord][yCoord] = true;
+                                Debug.Log(currentEnemy);
+                            }
+                            else
+                            {
+                                break; // stop spawning in this room
+                            }
+                        }
+                        else
+                        {
+                            break;  // not sure if this is needed but for safety
+                        }
+                        if(currentEnemy <encounterList[currentEncounter].Length-1)
+                        {
+                            currentEnemy++;
+                        }
+                        else
+                        {
+                             break; // stop spawning enemies
+                        }
+                    }
+                   
+                }
+            }
+
+        }
+    }
 
     // Update is called once per frame
     void Update ()

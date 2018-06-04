@@ -120,6 +120,11 @@ Prefab:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 114323182876696408, guid: c253e216a87074348a4370ffdf99016d,
+        type: 2}
+      propertyPath: encounterList.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4275080612339842, guid: c253e216a87074348a4370ffdf99016d, type: 2}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -152,6 +157,18 @@ Prefab:
       propertyPath: m_RootOrder
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 114323182876696408, guid: c253e216a87074348a4370ffdf99016d,
+        type: 2}
+      propertyPath: encounterList.Array.data[0]
+      value: 
+      objectReference: {fileID: 1209498416098798, guid: 256552f672a443f48b700f5727e9c4ca,
+        type: 2}
+    - target: {fileID: 114323182876696408, guid: c253e216a87074348a4370ffdf99016d,
+        type: 2}
+      propertyPath: goblin
+      value: 
+      objectReference: {fileID: 1209498416098798, guid: 256552f672a443f48b700f5727e9c4ca,
+        type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c253e216a87074348a4370ffdf99016d, type: 2}
   m_IsPrefabParent: 0
