@@ -31,6 +31,7 @@ public class BoardCreator : MonoBehaviour
     public bool[][] spaceOccupied; 
     public int startingPointX, startingPointY;
     bool firstTimeOnly;
+    public List<GameObject> chestList;
     public GameObject chest;
 
     public GameObject[][] encounterList; // for storing a polulated list to spawn enimes from. 
@@ -349,6 +350,7 @@ public class BoardCreator : MonoBehaviour
                     {
                         // Create THE CHEST! 
                         GameObject chestInstance = Instantiate(chest, new Vector3(x,y), Quaternion.identity) as GameObject;
+                        chestList.Add(chestInstance);
                         validPlacement = true;
                     }
                 }
@@ -402,7 +404,7 @@ public class BoardCreator : MonoBehaviour
         {
 
             Room currentRoom = rooms[room];
-            int currentEncounter = 0; // easier for testing
+            int currentEncounter = 0; // easier for testing  // incert code to pick at some point
             int currentEnemy = 0; 
 
             for (int j = 0; j < currentRoom.roomWidth; j++)
@@ -416,7 +418,7 @@ public class BoardCreator : MonoBehaviour
                     
                     
 
-                    if(spaceOccupied[xCoord][yCoord] == false)
+                    if(spaceOccupied[xCoord][yCoord] == false && spaceOccupied[xCoord][yCoord-1] == false && spaceOccupied[xCoord - 1][yCoord ] == false)
                     {
                         if (encounterList[currentEncounter][currentEnemy])
                         {

@@ -58,7 +58,7 @@ public class Player : MonoBehaviour {
                 if (board.GetComponent<BoardCreator>().tileArray[(int)transform.position.x][(int)transform.position.y + 1].GetComponent<TerrainType>().terrain == TerrainType.terrainType.Floor)
                 {
                     transform.position = new Vector3(transform.position.x, transform.position.y + 1);
-                    transform.position = new Vector3(transform.position.x, transform.position.y + Mathf.Lerp(0.0f, 1.0f, 10000.0f));
+                    //transform.position = new Vector3(transform.position.x, transform.position.y + Mathf.Lerp(0.0f, 1.0f, 10000.0f));
                     //Mathf.Lerp(0, 1, 5.0f);
                 }
                 else { result = false; }

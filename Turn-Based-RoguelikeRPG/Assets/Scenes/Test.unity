@@ -155,7 +155,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4275080612339842, guid: c253e216a87074348a4370ffdf99016d, type: 2}
       propertyPath: m_RootOrder
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 114323182876696408, guid: c253e216a87074348a4370ffdf99016d,
         type: 2}
@@ -246,11 +246,11 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 260676049}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -10}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2, y: 2, z: 1}
   m_Children: []
-  m_Father: {fileID: 0}
+  m_Father: {fileID: 916547957}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &916547954 stripped
@@ -270,6 +270,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   board: {fileID: 0}
+--- !u!4 &916547957 stripped
+Transform:
+  m_PrefabParentObject: {fileID: 4222510179885692, guid: 599483d4acfac634aa69dd71b70f2f14,
+    type: 2}
+  m_PrefabInternal: {fileID: 1859800012}
 --- !u!1001 &1859800012
 Prefab:
   m_ObjectHideFlags: 0
@@ -307,7 +312,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4222510179885692, guid: 599483d4acfac634aa69dd71b70f2f14, type: 2}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 212099760607356652, guid: 599483d4acfac634aa69dd71b70f2f14,
         type: 2}
