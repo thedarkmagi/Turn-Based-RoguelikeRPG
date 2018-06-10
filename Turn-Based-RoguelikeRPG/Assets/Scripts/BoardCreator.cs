@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine;
+using UnityEditor;
+using System.IO;
 
 public class BoardCreator : MonoBehaviour
 {
@@ -28,24 +31,28 @@ public class BoardCreator : MonoBehaviour
     private GameObject boardHolder;
 
     public GameObject[][] tileArray;
-    public bool[][] spaceOccupied; 
+    public bool[][] spaceOccupied;
     public int startingPointX, startingPointY;
     bool firstTimeOnly;
     public List<GameObject> chestList;
     public GameObject chest;
 
-    public GameObject[][] encounterList; // for storing a polulated list to spawn enimes from. 
-    public GameObject goblin;
+    public GameObject[][] encounterList ; // for storing a polulated list to spawn enimes from. 
 
+    public List<GameObject> PossibleEnemies;
+
+    public GameObject goblin;
+    public GameObject boss;
+    public readInEncounter readIn;
     // Use this for initialization
-    void Start ()
+    void Start()
     {
         firstTimeOnly = true;
         boardHolder = new GameObject("BoardHolder");
 
-        setupEncounterList(1, 5);
-       // encounterList[0][1] = goblin;
-
+        //setupEncounterList(2, 5);
+        // encounterList[0][1] = goblin;
+        
         // incert run the functions
         SetupTilesArray();
         CreateRoomsAndCorridors();
@@ -55,18 +62,22 @@ public class BoardCreator : MonoBehaviour
 
         InstantiateTiles();
 
+        setUpEncounters();
         spawnChests(5);
-        spawnEncounter(4);
+        spawnEncounter();
+
+        
+        
         // not needed as it simply adds a boarder 
         //InstantiateOuterWalls();
     }
-	
+
     void SetupTilesArray()
     {
         tiles = new TileType[columns][];
         tileArray = new GameObject[columns][];
         spaceOccupied = new bool[columns][];
-        for(int i=0; i<tiles.Length;i++)
+        for (int i = 0; i < tiles.Length; i++)
         {
             tiles[i] = new TileType[rows];
             tileArray[i] = new GameObject[rows];
@@ -75,9 +86,9 @@ public class BoardCreator : MonoBehaviour
 
 
         //populated the full array as walls so that rooms can be carved out later.
-        for(int j=0;j<tiles.Length;j++)
+        for (int j = 0; j < tiles.Length; j++)
         {
-            for(int k=0;k<tiles[j].Length;k++)
+            for (int k = 0; k < tiles[j].Length; k++)
             {
                 tiles[j][k] = TileType.Wall;
                 spaceOccupied[j][k] = true;
@@ -95,17 +106,17 @@ public class BoardCreator : MonoBehaviour
         rooms[0] = new Room();
         corridors[0] = new Corridor();
 
-        rooms[0].SetupRoom(roomWitdh,roomHeight,columns,rows);
+        rooms[0].SetupRoom(roomWitdh, roomHeight, columns, rows);
 
         corridors[0].SetupCorridor(rooms[0], corridorLength, roomWitdh, roomHeight, columns, rows, true);
 
-        for(int i = 1; i< rooms.Length;i++)
+        for (int i = 1; i < rooms.Length; i++)
         {
             rooms[i] = new Room();
 
             rooms[i].SetupRoom(roomWitdh, roomHeight, columns, rows, corridors[i - 1]);
 
-            if(i<corridors.Length)
+            if (i < corridors.Length)
             {
                 corridors[i] = new Corridor();
 
@@ -118,22 +129,22 @@ public class BoardCreator : MonoBehaviour
 
     void SetTileValuesForRooms()
     {
-        for( int i = 0; i < rooms.Length;i++)
+        for (int i = 0; i < rooms.Length; i++)
         {
             Room currentRoom = rooms[i];
 
-            for ( int j=0;j<currentRoom.roomWidth;j++)
+            for (int j = 0; j < currentRoom.roomWidth; j++)
             {
                 int xCoord = currentRoom.xPos + j;
 
-                for ( int k =0; k<currentRoom.roomHeight;k++)
+                for (int k = 0; k < currentRoom.roomHeight; k++)
                 {
-                    int yCoord = Mathf.Clamp( currentRoom.yPos + k,0 ,tiles[0].Length);  // clamp to stop out of array bounds, appears to work. IF ISSUE RETURNS ALTER THIS! 
-                    
+                    int yCoord = Mathf.Clamp(currentRoom.yPos + k, 0, tiles[0].Length);  // clamp to stop out of array bounds, appears to work. IF ISSUE RETURNS ALTER THIS! //Happened again
+
                     tiles[xCoord][yCoord] = TileType.Floor;  // sometimes causes a index out of range issue
                     spaceOccupied[xCoord][yCoord] = false;
 
-                    if(firstTimeOnly==true)
+                    if (firstTimeOnly == true)
                     {
                         startingPointX = xCoord;
                         startingPointY = yCoord;
@@ -147,16 +158,16 @@ public class BoardCreator : MonoBehaviour
 
     void SetTilesValueForCorridors()
     {
-        for ( int i =0; i<corridors.Length;i++)
+        for (int i = 0; i < corridors.Length; i++)
         {
             Corridor currentCorridor = corridors[i];
 
-            for(int j=0;j<currentCorridor.corridorLength;j++)
+            for (int j = 0; j < currentCorridor.corridorLength; j++)
             {
                 int xCoord = currentCorridor.startXPos;
                 int yCoord = currentCorridor.startYPos;
 
-                switch(currentCorridor.direction)
+                switch (currentCorridor.direction)
                 {
                     case Direction.North:
                         yCoord += j;
@@ -179,16 +190,16 @@ public class BoardCreator : MonoBehaviour
 
     void InstantiateTiles()
     {
-        for(int i=0;i<tiles.Length;i++)
+        for (int i = 0; i < tiles.Length; i++)
         {
-            for(int j=0;j<tiles[i].Length;j++)
+            for (int j = 0; j < tiles[i].Length; j++)
             {
                 // if floor make floor? 
                 //if (tiles[i][j] == TileType.Floor)
                 //{
-                    InstantiateFromArray(floorTiles, i, j);
-               // }
-                if(tiles[i][j]==TileType.Wall)
+                InstantiateFromArray(floorTiles, i, j);
+                // }
+                if (tiles[i][j] == TileType.Wall)
                 {
                     InstantiateFromArray(wallTiles, i, j);
                 }
@@ -246,7 +257,7 @@ public class BoardCreator : MonoBehaviour
         }
     }
 
-    void InstantiateFromArray (GameObject[] prefabs, float xCoord, float yCoord)
+    void InstantiateFromArray(GameObject[] prefabs, float xCoord, float yCoord)
     {
         int randomIndex = Random.Range(0, prefabs.Length);
 
@@ -258,7 +269,7 @@ public class BoardCreator : MonoBehaviour
         //int tileType = (int)
         if ((int)tiles[(int)xCoord][(int)yCoord] != 0)
         {
-            tileInstance.AddComponent<TerrainType>().terrain = (TerrainType.terrainType)tiles[(int)xCoord][(int)yCoord]-1; // so the type is applied properly for movement logic.
+            tileInstance.AddComponent<TerrainType>().terrain = (TerrainType.terrainType)tiles[(int)xCoord][(int)yCoord] - 1; // so the type is applied properly for movement logic.
         }
         else
         {
@@ -271,9 +282,9 @@ public class BoardCreator : MonoBehaviour
     void spawnChests(int numberOfChests)
     {
         // pick a floor tile considered empty 
-        while(numberOfChests>0)
+        while (numberOfChests > 0)
         {
-            bool validPlacement=false;
+            bool validPlacement = false;
             while (validPlacement != true)
             {
                 int x, y;
@@ -289,9 +300,9 @@ public class BoardCreator : MonoBehaviour
                         switch ((Direction)i)
                         {
                             case Direction.North:
-                                if (spaceOccupied[x][y+1] == false)
+                                if (spaceOccupied[x][y + 1] == false)
                                 {
-                                    if(spaceOccupied[x+1][y+1]==false && spaceOccupied[x-1][y+1]==false)
+                                    if (spaceOccupied[x + 1][y + 1] == false && spaceOccupied[x - 1][y + 1] == false)
                                     {
                                         validDirections[i] = true;
                                     }
@@ -299,7 +310,7 @@ public class BoardCreator : MonoBehaviour
 
                                 break;
                             case Direction.East:
-                                if (spaceOccupied[x+1][y ] == false)
+                                if (spaceOccupied[x + 1][y] == false)
                                 {
                                     if (spaceOccupied[x + 1][y + 1] == false && spaceOccupied[x + 1][y - 1] == false)
                                     {
@@ -333,9 +344,9 @@ public class BoardCreator : MonoBehaviour
                         }
                     }
 
-                    for(int i=0; i<validDirections.Length;i++)
+                    for (int i = 0; i < validDirections.Length; i++)
                     {
-                        if(validDirections[i] == false)
+                        if (validDirections[i] == false)
                         {
                             result = false;
                             break;
@@ -344,12 +355,12 @@ public class BoardCreator : MonoBehaviour
                         {
                             result = true;
                         }
-                        
+
                     }
-                    if(result == true)
+                    if (result == true)
                     {
                         // Create THE CHEST! 
-                        GameObject chestInstance = Instantiate(chest, new Vector3(x,y), Quaternion.identity) as GameObject;
+                        GameObject chestInstance = Instantiate(chest, new Vector3(x, y), Quaternion.identity) as GameObject;
                         chestList.Add(chestInstance);
                         validPlacement = true;
                     }
@@ -363,36 +374,93 @@ public class BoardCreator : MonoBehaviour
         // check surrounding tiles if a center tile is empty and both on either side are not. move left or right one and check again. 
     }
 
-     void setupEncounterList(int numOfEncounterTypes, int numOfEnemiesInEncounter) //  VERY MUCH TEMP, NEEDS A LOT OF CHANGES 
+    //void setupEncounterList(int numOfEncounterTypes, int numOfEnemiesInEncounter) //  VERY MUCH TEMP, NEEDS A LOT OF CHANGES 
+    //{
+    //    encounterList = new GameObject[numOfEncounterTypes][];
+
+    //    for (int i = 0; i < encounterList.Length; i++)
+    //    {
+
+    //        encounterList[i] = new GameObject[numOfEnemiesInEncounter];
+    //    }
+
+
+    //    //populated the full array as walls so that rooms can be carved out later.
+    //    for (int j = 0; j < encounterList.Length - 1; j++)
+    //    {
+    //        for (int k = 0; k < encounterList[j].Length; k++)
+    //        {
+    //            encounterList[j][k] = goblin;
+    //        }
+    //    }
+    //    encounterList[encounterList.Length-1][encounterList.Length - 1] = boss;
+    //}
+
+    void setUpEncounters()
     {
-        encounterList = new GameObject[numOfEncounterTypes][];  
+        // something about difficulty 
+
+        int nEncounters = rooms.Length-Random.Range(1,rooms.Length-1); // so some rooms are empty   use diffculty or something to alter this   
+        // also some random factor??
+        List<int> mobsPerEncounter = new List<int>();
+        for( int i =0; i < nEncounters;i++)
+        {
+            int nMobs = 0;
+            nMobs = Random.Range(1, 6); // arbiraty maximum and minimum encounter size
+            mobsPerEncounter.Add(nMobs);
+        }
+        //int j = 0;
         
-        for (int i = 0; i <encounterList.Length; i++)
+        
+
+        encounterList = new GameObject[nEncounters][];
+        for (int i = 0; i <nEncounters ; i++)
         {
             
-            encounterList[i] = new GameObject[numOfEnemiesInEncounter];
+                encounterList[i] = new GameObject[mobsPerEncounter[i]];
+            
+            
         }
 
 
-        //populated the full array as walls so that rooms can be carved out later.
         for (int j = 0; j < encounterList.Length; j++)
         {
             for (int k = 0; k < encounterList[j].Length; k++)
             {
-                encounterList[j][k] = goblin;
+                int selectedEmemy = Random.Range(0, PossibleEnemies.Count);
+                encounterList[j][k] = PossibleEnemies[selectedEmemy];
             }
         }
+
+
+        //foreach ( int mob in mobsPerEncounter)
+        //{
+            
+        //    for(int i=0; i<mob;i++)
+        //    {
+                
+                
+
+        //        int selectedEmemy = Random.Range(0, PossibleEnemies.Count);
+        //       // encounterList[j].Add(PossibleEnemies[selectedEmemy]);
+        //    }
+        //   // j++;
+        //  //  encounterList.Add(temp);
+        //}
+        
     }
-    void spawnEncounter(int maxEncounter)
+
+
+    void spawnEncounter()
     {
 
         // for deciding which rooms to spawn in.
-        List<int> spawnEncountersIn=new List<int>();
-        for(int i = 0; i< rooms.Length;i++)
+        List<int> spawnEncountersIn = new List<int>();
+        for (int i = 0; i < rooms.Length; i++)
         {
-            if (Random.Range(0.0f, 20.0f) > 8 && i<maxEncounter)
+            if (Random.Range(0.0f, 20.0f) > 8 )
             {
-                spawnEncountersIn.Add(i); 
+                spawnEncountersIn.Add(i);
             }
             else
             {
@@ -405,7 +473,7 @@ public class BoardCreator : MonoBehaviour
 
             Room currentRoom = rooms[room];
             int currentEncounter = 0; // easier for testing  // incert code to pick at some point
-            int currentEnemy = 0; 
+            int currentEnemy = 0;
 
             for (int j = 0; j < currentRoom.roomWidth; j++)
             {
@@ -415,10 +483,10 @@ public class BoardCreator : MonoBehaviour
                 {
                     int yCoord = currentRoom.yPos + k;
 
-                    
-                    
 
-                    if(spaceOccupied[xCoord][yCoord] == false && spaceOccupied[xCoord][yCoord-1] == false && spaceOccupied[xCoord - 1][yCoord ] == false)
+
+
+                    if (spaceOccupied[xCoord][yCoord] == false && spaceOccupied[xCoord][yCoord - 1] == false && spaceOccupied[xCoord - 1][yCoord] == false)
                     {
                         if (encounterList[currentEncounter][currentEnemy])
                         {
@@ -437,25 +505,61 @@ public class BoardCreator : MonoBehaviour
                         {
                             break;  // not sure if this is needed but for safety
                         }
-                        if(currentEnemy <encounterList[currentEncounter].Length-1)
+                        if (currentEnemy < encounterList[currentEncounter].Length - 1)
                         {
                             currentEnemy++;
                         }
                         else
                         {
-                             break; // stop spawning enemies
+                            break; // stop spawning enemies
                         }
                     }
-                   
+
                 }
             }
 
         }
     }
 
-    // Update is called once per frame
-    void Update ()
+    //Update is called once per frame
+    void Update()
     {
-		
-	}
+
+    }
+
+
+
+
+    public class readInEncounter: MonoBehaviour
+    {
+        //[MenuItem("Tools/Write file")]
+        static void WriteString()
+        {
+            string path = "Assets/Resources/test.txt";
+
+            //Write some text to the test.txt file
+            StreamWriter writer = new StreamWriter(path, true);
+            writer.WriteLine("Test");
+            writer.Close();
+
+            //Re-import the file to update the reference in the editor
+            AssetDatabase.ImportAsset(path);
+            //TextAsset asset = Resources.Load("test");  // disabled cuz error I don't care about
+
+            //Print the text from the file
+            //  Debug.Log(asset.text);   // disabled cuz error I don't care about 
+        }
+
+       // [MenuItem("Tools/Read file")]
+        static public void ReadString()
+        {
+            string path = "Assets/Resources/test.txt";
+
+            //Read the text from directly from the test.txt file
+            StreamReader reader = new StreamReader(path);
+            Debug.Log(reader.ReadToEnd());
+            reader.Close();
+        }
+
+    }
 }

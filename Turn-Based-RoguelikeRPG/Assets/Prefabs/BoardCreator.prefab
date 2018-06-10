@@ -73,4 +73,7 @@ MonoBehaviour:
   - {fileID: 1713896065672394, guid: dfb4b0fb1612c574489313fd5da3328f, type: 2}
   startingPointX: 0
   startingPointY: 0
+  chestList: []
   chest: {fileID: 1846941611038520, guid: 8b03f063f31e0944f9d4f470f7d0ff44, type: 2}
+  goblin: {fileID: 1209498416098798, guid: 256552f672a443f48b700f5727e9c4ca, type: 2}
+  boss: {fileID: 1748908403297528, guid: 68ec11f0a315a5f45a1253d9e28798b6, type: 2}

@@ -122,8 +122,8 @@ Prefab:
     m_Modifications:
     - target: {fileID: 114323182876696408, guid: c253e216a87074348a4370ffdf99016d,
         type: 2}
-      propertyPath: encounterList.Array.size
-      value: 1
+      propertyPath: PossibleEnemies.Array.size
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 4275080612339842, guid: c253e216a87074348a4370ffdf99016d, type: 2}
       propertyPath: m_LocalPosition.x
@@ -159,15 +159,15 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 114323182876696408, guid: c253e216a87074348a4370ffdf99016d,
         type: 2}
-      propertyPath: encounterList.Array.data[0]
+      propertyPath: PossibleEnemies.Array.data[0]
       value: 
       objectReference: {fileID: 1209498416098798, guid: 256552f672a443f48b700f5727e9c4ca,
         type: 2}
     - target: {fileID: 114323182876696408, guid: c253e216a87074348a4370ffdf99016d,
         type: 2}
-      propertyPath: goblin
+      propertyPath: PossibleEnemies.Array.data[1]
       value: 
-      objectReference: {fileID: 1209498416098798, guid: 256552f672a443f48b700f5727e9c4ca,
+      objectReference: {fileID: 1748908403297528, guid: 68ec11f0a315a5f45a1253d9e28798b6,
         type: 2}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c253e216a87074348a4370ffdf99016d, type: 2}
