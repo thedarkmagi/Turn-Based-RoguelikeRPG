@@ -402,6 +402,8 @@ public class BoardCreator : MonoBehaviour
 
         int nEncounters = rooms.Length-Random.Range(1,rooms.Length-1); // so some rooms are empty   use diffculty or something to alter this   
         // also some random factor??
+        Debug.Log(nEncounters);
+
         List<int> mobsPerEncounter = new List<int>();
         for( int i =0; i < nEncounters;i++)
         {
@@ -416,38 +418,38 @@ public class BoardCreator : MonoBehaviour
         encounterList = new GameObject[nEncounters][];
         for (int i = 0; i <nEncounters ; i++)
         {
-            
+            if (i != nEncounters - 1)
+            {
                 encounterList[i] = new GameObject[mobsPerEncounter[i]];
-            
+            }
+            else
+            {
+                encounterList[i] = new GameObject[1];
+            }
             
         }
 
-
-        for (int j = 0; j < encounterList.Length; j++)
+        //bool onlyOnce = true;
+        for (int j = 0; j < nEncounters-1; j++)
         {
-            for (int k = 0; k < encounterList[j].Length; k++)
+            for (int k = 0; k < mobsPerEncounter[j]; k++)
             {
                 int selectedEmemy = Random.Range(0, PossibleEnemies.Count);
+                Debug.Log(selectedEmemy);
+                //if (onlyOnce == true)
+                //{
+                //    if (selectedEmemy == (int)PossibleEnemies.Find(boss))
+                //    {
+                //        PossibleEnemies.Remove(boss);
+                //        onlyOnce = false;
+                //    }
+                //}
                 encounterList[j][k] = PossibleEnemies[selectedEmemy];
             }
         }
-
-
-        //foreach ( int mob in mobsPerEncounter)
-        //{
-            
-        //    for(int i=0; i<mob;i++)
-        //    {
-                
-                
-
-        //        int selectedEmemy = Random.Range(0, PossibleEnemies.Count);
-        //       // encounterList[j].Add(PossibleEnemies[selectedEmemy]);
-        //    }
-        //   // j++;
-        //  //  encounterList.Add(temp);
-        //}
-        
+        //Debug.Log(encounterList[encounterList.Length - 1][0]);
+        encounterList[encounterList.Length-1][0] = boss;
+        //Debug.Log(encounterList[encounterList.Length - 1][0]);
     }
 
 
@@ -456,23 +458,30 @@ public class BoardCreator : MonoBehaviour
 
         // for deciding which rooms to spawn in.
         List<int> spawnEncountersIn = new List<int>();
-        for (int i = 0; i < rooms.Length; i++)
-        {
-            if (Random.Range(0.0f, 20.0f) > 8 )
-            {
-                spawnEncountersIn.Add(i);
-            }
-            else
-            {
-                // mark room as bad
-            }
-        }
 
+        ////temporaryly commented out for very consistant spawning of all mobs
+        //for (int i = 0; i < rooms.Length; i++)
+        //{
+        //    if (Random.Range(0.0f, 20.0f) > 8 )
+        //    {
+        //        spawnEncountersIn.Add(i);
+        //    }
+        //    else
+        //    {
+        //        // mark room as bad
+        //    }
+        //}
+
+        for ( int j =0; j<encounterList.Length;j++)
+        {
+            spawnEncountersIn.Add(j);
+        }
+        int currentEncounter = 0;
         foreach (int room in spawnEncountersIn)
         {
 
             Room currentRoom = rooms[room];
-            int currentEncounter = 0; // easier for testing  // incert code to pick at some point
+             // easier for testing  // incert code to pick at some point
             int currentEnemy = 0;
 
             for (int j = 0; j < currentRoom.roomWidth; j++)
@@ -488,26 +497,27 @@ public class BoardCreator : MonoBehaviour
 
                     if (spaceOccupied[xCoord][yCoord] == false && spaceOccupied[xCoord][yCoord - 1] == false && spaceOccupied[xCoord - 1][yCoord] == false)
                     {
-                        if (encounterList[currentEncounter][currentEnemy])
+                        if (currentEnemy < encounterList[currentEncounter].Length)
                         {
-                            if (encounterList[currentEncounter][currentEnemy] != null) // incase of lists not being filled correctly
+                            if (encounterList[currentEncounter][currentEnemy])
                             {
-                                GameObject enemyInstance = Instantiate(encounterList[currentEncounter][currentEnemy], new Vector3(xCoord, yCoord), Quaternion.identity) as GameObject;
-                                spaceOccupied[xCoord][yCoord] = true;
-                                Debug.Log(currentEnemy);
+                                if (encounterList[currentEncounter][currentEnemy] != null) // incase of lists not being filled correctly
+                                {
+                                    GameObject enemyInstance = Instantiate(encounterList[currentEncounter][currentEnemy], new Vector3(xCoord, yCoord), Quaternion.identity);// as GameObject;
+                                    spaceOccupied[xCoord][yCoord] = true;
+                                    currentEnemy++;
+                                    // Debug.Log(currentEnemy);
+                                }
+                                else
+                                {
+                                    break; // stop spawning in this room
+                                }
                             }
                             else
                             {
-                                break; // stop spawning in this room
+                                break;  // not sure if this is needed but for safety
                             }
-                        }
-                        else
-                        {
-                            break;  // not sure if this is needed but for safety
-                        }
-                        if (currentEnemy < encounterList[currentEncounter].Length - 1)
-                        {
-                            currentEnemy++;
+
                         }
                         else
                         {
@@ -517,7 +527,7 @@ public class BoardCreator : MonoBehaviour
 
                 }
             }
-
+            currentEncounter++;
         }
     }
 

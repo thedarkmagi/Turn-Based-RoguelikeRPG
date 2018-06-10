@@ -123,7 +123,7 @@ Prefab:
     - target: {fileID: 114323182876696408, guid: c253e216a87074348a4370ffdf99016d,
         type: 2}
       propertyPath: PossibleEnemies.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4275080612339842, guid: c253e216a87074348a4370ffdf99016d, type: 2}
       propertyPath: m_LocalPosition.x
@@ -167,8 +167,19 @@ Prefab:
         type: 2}
       propertyPath: PossibleEnemies.Array.data[1]
       value: 
-      objectReference: {fileID: 1748908403297528, guid: 68ec11f0a315a5f45a1253d9e28798b6,
+      objectReference: {fileID: 1440764054112564, guid: 6b204b07134548e4dab09a3caa708baa,
         type: 2}
+    - target: {fileID: 114323182876696408, guid: c253e216a87074348a4370ffdf99016d,
+        type: 2}
+      propertyPath: PossibleEnemies.Array.data[2]
+      value: 
+      objectReference: {fileID: 1130790560717666, guid: d6c33d4550c8ec44b95b2860145dd5f2,
+        type: 2}
+    - target: {fileID: 114323182876696408, guid: c253e216a87074348a4370ffdf99016d,
+        type: 2}
+      propertyPath: PossibleEnemies.Array.data[3]
+      value: 
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: c253e216a87074348a4370ffdf99016d, type: 2}
   m_IsPrefabParent: 0
