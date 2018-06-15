@@ -483,10 +483,14 @@ public class BoardCreator : MonoBehaviour
             Room currentRoom = rooms[room];
              // easier for testing  // incert code to pick at some point
             int currentEnemy = 0;
-
+            GameObject encounter = new GameObject("encounter"+room);
+            encounter.transform.position = new Vector3(Mathf.CeilToInt(currentRoom.roomWidth/2)+ currentRoom.xPos, Mathf.CeilToInt(currentRoom.roomHeight/2)+ currentRoom.yPos, 0);
+            encounter.AddComponent<BoxCollider2D>().size= new Vector2(Mathf.CeilToInt(currentRoom.roomWidth ), Mathf.CeilToInt(currentRoom.roomHeight ));
+            encounter.GetComponent<BoxCollider2D>().isTrigger = true;
+            encounter.AddComponent<CombatManager>();
             for (int j = 0; j < currentRoom.roomWidth; j++)
             {
-                int xCoord = currentRoom.xPos + j;
+                int xCoord = currentRoom.xPos + j; // used to loop throught the postions in the room itself
 
                 for (int k = 0; k < currentRoom.roomHeight; k++)
                 {
@@ -507,6 +511,9 @@ public class BoardCreator : MonoBehaviour
                                     spaceOccupied[xCoord][yCoord] = true;
                                     currentEnemy++;
                                     // Debug.Log(currentEnemy);
+                                    //encounter.transform.position = enemyInstance.transform.position;
+                                    enemyInstance.transform.parent = encounter.transform;
+                                    
                                 }
                                 else
                                 {

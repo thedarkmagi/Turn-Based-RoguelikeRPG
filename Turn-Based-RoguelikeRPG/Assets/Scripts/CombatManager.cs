@@ -22,4 +22,15 @@ public class CombatManager : MonoBehaviour {
 
         // sort by speed score or something 
     }
+
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        
+        if(collision.GetComponent<Player>())
+        {
+            //StartBattle
+            print("starting Combat Operations");
+        }
+    }
 }
