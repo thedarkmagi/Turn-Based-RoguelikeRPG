@@ -75,5 +75,10 @@ MonoBehaviour:
   startingPointY: 0
   chestList: []
   chest: {fileID: 1846941611038520, guid: 8b03f063f31e0944f9d4f470f7d0ff44, type: 2}
+  PossibleEnemies:
+  - {fileID: 1209498416098798, guid: 256552f672a443f48b700f5727e9c4ca, type: 2}
+  - {fileID: 1440764054112564, guid: 6b204b07134548e4dab09a3caa708baa, type: 2}
+  - {fileID: 1130790560717666, guid: d6c33d4550c8ec44b95b2860145dd5f2, type: 2}
   goblin: {fileID: 1209498416098798, guid: 256552f672a443f48b700f5727e9c4ca, type: 2}
   boss: {fileID: 1748908403297528, guid: 68ec11f0a315a5f45a1253d9e28798b6, type: 2}
+  readIn: {fileID: 0}

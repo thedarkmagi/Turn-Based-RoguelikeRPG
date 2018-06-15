@@ -69,11 +69,13 @@ public class BoardCreator : MonoBehaviour
         
         
         // not needed as it simply adds a boarder 
-        //InstantiateOuterWalls();
+        InstantiateOuterWalls();
     }
 
     void SetupTilesArray()
     {
+        columns += 1;
+        rows += 1;
         tiles = new TileType[columns][];
         tileArray = new GameObject[columns][];
         spaceOccupied = new bool[columns][];
@@ -135,7 +137,7 @@ public class BoardCreator : MonoBehaviour
 
             for (int j = 0; j < currentRoom.roomWidth; j++)
             {
-                int xCoord = currentRoom.xPos + j;
+                int xCoord = Mathf.Clamp( currentRoom.xPos + j,0,tiles.Length);
 
                 for (int k = 0; k < currentRoom.roomHeight; k++)
                 {
@@ -211,10 +213,10 @@ public class BoardCreator : MonoBehaviour
     void InstantiateOuterWalls()
     {
         // The outer walls are one unit left, right, up and down from the board.
-        float leftEdgeX = -1f;
-        float rightEdgeX = columns + 0f;
-        float bottomEdgeY = -1f;
-        float topEdgeY = rows + 0f;
+        float leftEdgeX = 0f;
+        float rightEdgeX = columns + -1f;
+        float bottomEdgeY = 0f;
+        float topEdgeY = rows + -1f;
 
         // Instantiate both vertical walls (one on each side).
         InstantiateVerticalOuterWall(leftEdgeX, bottomEdgeY, topEdgeY);
